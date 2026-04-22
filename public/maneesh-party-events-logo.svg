@@ -1,0 +1,96 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 500" width="500" height="500">
+  <defs>
+    <radialGradient id="bgRadial" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#2d005a"/>
+      <stop offset="100%" stop-color="#0d0020"/>
+    </radialGradient>
+    <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FFE066"/>
+      <stop offset="40%" stop-color="#FFF8C0"/>
+      <stop offset="100%" stop-color="#B8760A"/>
+    </linearGradient>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="4" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    <filter id="softGlow">
+      <feGaussianBlur stdDeviation="8" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    <path id="topArc" d="M 75,250 A 175,175 0 0,1 425,250"/>
+    <path id="bottomArc" d="M 90,270 A 160,160 0 0,0 410,270"/>
+  </defs>
+
+  <circle cx="250" cy="250" r="238" fill="none" stroke="url(#goldGrad)" stroke-width="3" opacity="0.5"/>
+  <circle cx="250" cy="250" r="232" fill="none" stroke="#FFD700" stroke-width="0.8" opacity="0.3"/>
+  <circle cx="250" cy="250" r="228" fill="url(#bgRadial)"/>
+  <circle cx="250" cy="250" r="220" fill="none" stroke="url(#goldGrad)" stroke-width="2.5" opacity="0.9" filter="url(#glow)"/>
+  <circle cx="250" cy="250" r="210" fill="none" stroke="#FFD700" stroke-width="0.7" opacity="0.4"/>
+
+  <text
+    font-family="'Palatino Linotype', Palatino, 'Book Antiqua', serif"
+    font-size="28"
+    font-weight="bold"
+    fill="url(#goldGrad)"
+    filter="url(#glow)"
+    letter-spacing="10"
+  >
+    <textPath href="#topArc" startOffset="50%" text-anchor="middle">
+      MANEESH PARTY EVENTS
+    </textPath>
+  </text>
+
+  <text
+    font-family="'Trebuchet MS', Gill Sans, sans-serif"
+    font-size="15"
+    font-weight="400"
+    fill="#D4A0FF"
+    letter-spacing="3"
+  >
+    <textPath href="#bottomArc" startOffset="50%" text-anchor="middle">
+      Where Every Celebration Becomes a Memory
+    </textPath>
+  </text>
+
+  <g fill="#FFD700" opacity="0.55">
+    <circle cx="250" cy="34" r="2.5"/>
+    <circle cx="358" cy="64" r="2"/>
+    <circle cx="436" cy="142" r="2"/>
+    <circle cx="466" cy="250" r="2.5"/>
+    <circle cx="436" cy="358" r="2"/>
+    <circle cx="358" cy="436" r="2"/>
+    <circle cx="250" cy="466" r="2.5"/>
+    <circle cx="142" cy="436" r="2"/>
+    <circle cx="64" cy="358" r="2"/>
+    <circle cx="34" cy="250" r="2.5"/>
+    <circle cx="64" cy="142" r="2"/>
+    <circle cx="142" cy="64" r="2"/>
+  </g>
+
+  <line x1="80" y1="195" x2="420" y2="195" stroke="url(#goldGrad)" stroke-width="1" opacity="0.5"/>
+  <line x1="80" y1="305" x2="420" y2="305" stroke="url(#goldGrad)" stroke-width="1" opacity="0.5"/>
+
+  <polygon points="250,187 257,195 250,203 243,195" fill="url(#goldGrad)" filter="url(#glow)"/>
+  <polygon points="250,297 257,305 250,313 243,305" fill="url(#goldGrad)" filter="url(#glow)"/>
+
+  <ellipse cx="222" cy="235" rx="22" ry="28" fill="#FF69B4" opacity="0.85"/>
+  <line x1="222" y1="263" x2="226" y2="285" stroke="#FF69B4" stroke-width="1.5" opacity="0.7"/>
+  <ellipse cx="250" cy="225" rx="24" ry="30" fill="url(#goldGrad)" opacity="0.95" filter="url(#glow)"/>
+  <line x1="250" y1="255" x2="250" y2="285" stroke="#C8900A" stroke-width="1.5" opacity="0.8"/>
+  <ellipse cx="278" cy="235" rx="22" ry="28" fill="#B060FF" opacity="0.85"/>
+  <line x1="278" y1="263" x2="274" y2="285" stroke="#B060FF" stroke-width="1.5" opacity="0.7"/>
+  <circle cx="250" cy="286" r="3" fill="#FFD700" opacity="0.8"/>
+
+  <text x="250" y="342" font-family="'Palatino Linotype', Palatino, 'Book Antiqua', serif" font-size="38" font-weight="bold" fill="url(#goldGrad)" filter="url(#softGlow)" text-anchor="middle" letter-spacing="4">
+    MANEESH
+  </text>
+  <text x="250" y="368" font-family="'Trebuchet MS', 'Gill Sans', sans-serif" font-size="14" font-weight="400" fill="#E8B0FF" text-anchor="middle" letter-spacing="7">
+    PARTY EVENTS
+  </text>
+</svg>
