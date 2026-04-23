@@ -3,6 +3,7 @@ import {
   LEGACY_PHONE_VARIANTS,
   LEGACY_PLACEHOLDER_EMAIL,
   SESSION_KEY,
+  SESSION_TOKEN_KEY,
   STORAGE_KEY,
 } from '../constants/site.js'
 
@@ -31,7 +32,11 @@ export function normalizeSiteData(value) {
 
   const storedFounderImage = value.about?.founder?.image
   const founderImage =
-    typeof storedFounderImage === 'string' && storedFounderImage.startsWith('data:image/')
+    typeof storedFounderImage === 'string' &&
+    (storedFounderImage.startsWith('data:image/') ||
+      storedFounderImage.startsWith('http://') ||
+      storedFounderImage.startsWith('https://') ||
+      storedFounderImage.startsWith('/'))
       ? storedFounderImage
       : DEFAULT_SITE_DATA.about.founder.image
 
@@ -75,13 +80,18 @@ export function normalizeSiteData(value) {
           : value.contact.email,
     },
     events:
-      Array.isArray(value.events) && value.events.length > 0
-        ? value.events.map((eventItem) => ({
-            ...createEmptyEvent(),
-            ...eventItem,
-            videoUrl: typeof eventItem.videoUrl === 'string' ? eventItem.videoUrl : '',
-            images: Array.isArray(eventItem.images) ? eventItem.images : [],
-          }))
+      Array.isArray(value.events)
+        ? value.events.map((eventItem) => {
+            const safeEvent =
+              eventItem && typeof eventItem === 'object' ? eventItem : {}
+
+            return {
+              ...createEmptyEvent(),
+              ...safeEvent,
+              videoUrl: typeof safeEvent.videoUrl === 'string' ? safeEvent.videoUrl : '',
+              images: Array.isArray(safeEvent.images) ? safeEvent.images : [],
+            }
+          })
         : DEFAULT_SITE_DATA.events,
   }
 }
@@ -105,6 +115,14 @@ export function readAdminSession() {
     return sessionStorage.getItem(SESSION_KEY) === 'true'
   } catch {
     return false
+  }
+}
+
+export function readAdminToken() {
+  try {
+    return sessionStorage.getItem(SESSION_TOKEN_KEY) ?? ''
+  } catch {
+    return ''
   }
 }
 

@@ -2,6 +2,7 @@ import founderManeeshImage from '../assets/founder-maneesh.jpg'
 
 export const STORAGE_KEY = 'maneesh-events-site-v1'
 export const SESSION_KEY = 'maneesh-events-admin-v1'
+export const SESSION_TOKEN_KEY = 'maneesh-events-admin-token-v1'
 
 export const LEGACY_PLACEHOLDER_EMAIL = 'kushwahamaneesh081@gmail.com'
 export const LEGACY_PHONE_VARIANTS = ['+91 870 704 8205', '+91 98765 43210']

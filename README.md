@@ -1,16 +1,35 @@
-# React + Vite
+# PartyEvent (Maneesh Events)
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+React + Vite site with an optional Node/Express API for syncing site content across devices.
 
-Currently, two official plugins are available:
+## Setup
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- Install: `npm install`
+- Run the site: `npm run dev`
 
-## React Compiler
+## Admin login (local-only mode)
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+If `VITE_SITE_DATA_API_BASE` is not set, edits are saved to `localStorage` on the current device only.
 
-## Expanding the ESLint configuration
+Set in `.env` (see `.env.example`):
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+- `VITE_ADMIN_USERNAME`
+- `VITE_ADMIN_PASSWORD`
+
+## Cross-device sync (optional server)
+
+1. Set `VITE_SITE_DATA_API_BASE` in `.env` (example: `http://localhost:5174`).
+2. Configure server credentials in `.env`:
+   - `ADMIN_USERNAME`
+   - `ADMIN_PASSWORD`
+3. Run the API in another terminal: `npm run server`
+
+The API stores the current site data in `SITE_DATA_FILE` (default: `./server/data/site-data.json`).
+
+## Firebase image log (optional)
+
+If Firebase is configured, every successful Cloudinary upload is also recorded in Firebase as a simple URL log.
+
+- Configure `.env` using the `VITE_FIREBASE_*` vars in `.env.example`.
+- If `VITE_FIREBASE_DATABASE_URL` is set, it logs to Realtime Database at `cloudinaryUploads/`.
+- Otherwise it logs to Firestore collection `cloudinaryUploads`.

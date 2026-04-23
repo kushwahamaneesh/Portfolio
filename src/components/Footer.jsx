@@ -73,6 +73,9 @@ export default function Footer({
         <p className="text-xl font-bold text-[color:var(--text-strong)]">
           &copy; 2026 {businessName}
         </p>
+        {statusNote ? (
+          <p className="text-[color:var(--text-muted)]">{statusNote}</p>
+        ) : null}
         <p>All rights reserved</p>
       </div>
     </footer>

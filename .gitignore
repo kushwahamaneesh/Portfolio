@@ -27,3 +27,7 @@ dist-ssr
 .env
 .env.*
 !.env.example
+
+# Local site data persisted by the dev server
+server/data/site-data.json
+server/data/site-data.json.tmp

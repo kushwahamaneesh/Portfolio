@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import Header from './components/Header.jsx'
 import EventModal from './components/EventModal.jsx'
 import AdminDrawer from './components/AdminDrawer.jsx'
@@ -7,12 +7,15 @@ import AdminDashboardPage from './pages/AdminDashboardPage.jsx'
 import {
   DEFAULT_SITE_DATA,
   SESSION_KEY,
+  SESSION_TOKEN_KEY,
   STORAGE_KEY,
 } from './constants/site.js'
 import {
   createEmptyEvent,
   createEventId,
+  normalizeSiteData,
   readAdminSession,
+  readAdminToken,
   readStoredSiteData,
 } from './utils/siteHelpers.js'
 import {
@@ -20,14 +23,30 @@ import {
   uploadEventImageToCloudinary,
 } from './utils/cloudinary.js'
 import {
+  isFirebaseConfigured,
+  recordCloudinaryUpload,
+} from './utils/firebaseUploads.js'
+import {
+  fetchSiteDataFromServer,
+  isSiteApiConfigured,
+  loginAdminOnServer,
+  saveSiteDataToServer,
+} from './utils/siteApi.js'
+import {
   fieldClass,
   pillButtonClass,
   primaryButtonClass,
 } from './styles/ui.js'
 
 function App() {
+  const siteApiEnabled = isSiteApiConfigured()
   const [siteData, setSiteData] = useState(readStoredSiteData)
-  const [isAdmin, setIsAdmin] = useState(readAdminSession)
+  const [adminToken, setAdminToken] = useState(() =>
+    siteApiEnabled ? readAdminToken() : '',
+  )
+  const [isAdmin, setIsAdmin] = useState(() =>
+    siteApiEnabled ? Boolean(readAdminToken()) : readAdminSession(),
+  )
   const [isAdminPanelOpen, setIsAdminPanelOpen] = useState(false)
   const [activeEvent, setActiveEvent] = useState(null)
   const [loginForm, setLoginForm] = useState({
@@ -37,30 +56,108 @@ function App() {
   const [loginError, setLoginError] = useState('')
   const [eventDraft, setEventDraft] = useState(createEmptyEvent)
   const [uploadingImages, setUploadingImages] = useState(false)
-  const [statusNote, setStatusNote] = useState('Changes are saved on this device.')
+  const [statusNote, setStatusNote] = useState(() =>
+    siteApiEnabled ? 'Loading latest updates...' : 'Changes are saved on this device.',
+  )
+  const saveRequestId = useRef(0)
 
   useEffect(() => {
     try {
       sessionStorage.setItem(SESSION_KEY, String(isAdmin))
+      if (adminToken) {
+        sessionStorage.setItem(SESSION_TOKEN_KEY, adminToken)
+      } else {
+        sessionStorage.removeItem(SESSION_TOKEN_KEY)
+      }
     } catch {
       // Session storage might be unavailable in restricted environments.
     }
-  }, [isAdmin])
+  }, [adminToken, isAdmin])
 
   useEffect(() => {
     document.documentElement.dataset.theme = 'dark'
     document.documentElement.style.colorScheme = 'dark'
   }, [])
 
+  useEffect(() => {
+    if (!siteApiEnabled) {
+      return
+    }
+
+    let cancelled = false
+
+    async function loadFromServer() {
+      try {
+        const storedValue = await fetchSiteDataFromServer()
+        if (cancelled) {
+          return
+        }
+        const normalized = normalizeSiteData(storedValue)
+        setSiteData(normalized)
+        try {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(normalized))
+        } catch {
+          // Ignore local storage issues when server data is available.
+        }
+        setStatusNote('Loaded latest updates.')
+      } catch {
+        setStatusNote('Could not load server data. Using this device data.')
+      }
+    }
+
+    loadFromServer()
+
+    return () => {
+      cancelled = true
+    }
+  }, [siteApiEnabled])
+
   function persistSiteData(nextValue, successMessage = 'Changes are saved on this device.') {
     setSiteData(nextValue)
 
+    let canUseLocalStorage = true
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(nextValue))
-      setStatusNote(successMessage)
     } catch {
-      setStatusNote('Storage is full. Please remove some images or use smaller files.')
+      canUseLocalStorage = false
     }
+
+    if (!siteApiEnabled) {
+      setStatusNote(
+        canUseLocalStorage
+          ? successMessage
+          : 'Storage is full. Please remove some images or use smaller files.',
+      )
+      return
+    }
+
+    if (!adminToken) {
+      setStatusNote(
+        canUseLocalStorage
+          ? 'Changes are saved on this device. Login again to sync for all devices.'
+          : 'Storage is full and you are not logged in. Login again and save to sync.',
+      )
+      return
+    }
+
+    const requestId = (saveRequestId.current += 1)
+    setStatusNote('Saving changes for all devices...')
+
+    saveSiteDataToServer(nextValue, adminToken)
+      .then(() => {
+        if (saveRequestId.current === requestId) {
+          setStatusNote('Changes saved for all devices.')
+        }
+      })
+      .catch(() => {
+        if (saveRequestId.current === requestId) {
+          setStatusNote(
+            canUseLocalStorage
+              ? 'Could not save to server. Changes saved only on this device.'
+              : 'Could not save to server and local storage is full.',
+          )
+        }
+      })
   }
 
   function mutateSiteData(updater, successMessage) {
@@ -74,6 +171,24 @@ function App() {
     const username = loginForm.username.trim()
     const password = loginForm.password.trim()
 
+    if (siteApiEnabled) {
+      loginAdminOnServer({ username, password })
+        .then((payload) => {
+          setAdminToken(payload.token)
+          setIsAdmin(true)
+          setLoginError('')
+          setLoginForm({
+            username: '',
+            password: '',
+          })
+          setStatusNote('Admin login successful.')
+        })
+        .catch(() => {
+          setLoginError('Incorrect username or password.')
+        })
+      return
+    }
+
     const expectedUsername = import.meta.env.VITE_ADMIN_USERNAME ?? ''
     const expectedPassword = import.meta.env.VITE_ADMIN_PASSWORD ?? ''
 
@@ -82,10 +197,7 @@ function App() {
       return
     }
 
-    if (
-      username === expectedUsername &&
-      password === expectedPassword
-    ) {
+    if (username === expectedUsername && password === expectedPassword) {
       setIsAdmin(true)
       setLoginError('')
       setLoginForm({
@@ -100,6 +212,7 @@ function App() {
 
   function handleAdminLogout() {
     setIsAdmin(false)
+    setAdminToken('')
     setEventDraft(createEmptyEvent())
   }
 
@@ -129,6 +242,18 @@ function App() {
       const uploadedImages = await Promise.all(
         selectedFiles.map((file) => uploadEventImageToCloudinary(file)),
       )
+
+      if (isFirebaseConfigured()) {
+        Promise.all(
+          uploadedImages.map((url, index) =>
+            recordCloudinaryUpload({
+              url,
+              file: selectedFiles[index],
+              eventDraft,
+            }),
+          ),
+        ).catch(() => {})
+      }
 
       setEventDraft((currentValue) => ({
         ...currentValue,
