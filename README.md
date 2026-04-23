@@ -33,3 +33,10 @@ If Firebase is configured, every successful Cloudinary upload is also recorded i
 - Configure `.env` using the `VITE_FIREBASE_*` vars in `.env.example`.
 - If `VITE_FIREBASE_DATABASE_URL` is set, it logs to Realtime Database at `cloudinaryUploads/`.
 - Otherwise it logs to Firestore collection `cloudinaryUploads`.
+
+## Firebase site-data sync (optional)
+
+If `VITE_FIREBASE_SITE_DATA_ENABLED=true`, the website loads/saves the full site content (events, images, etc.) from Firebase so public visitors see the same content across devices.
+
+- Realtime DB: stored at `VITE_FIREBASE_SITE_DATA_PATH` (default `siteData/v1`).
+- Firestore fallback: stored at `siteData/v1`.

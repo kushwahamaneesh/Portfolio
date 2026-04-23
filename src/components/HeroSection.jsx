@@ -1,4 +1,4 @@
-import { HERO_FLOATING_CARDS, HERO_STATS } from '../constants/site.js'
+﻿import { HERO_FLOATING_CARDS, HERO_STATS } from '../constants/site.js'
 import {
   mutedPanelClass,
   panelClass,
@@ -27,17 +27,17 @@ export default function HeroSection({ hero, businessName, location }) {
     >
       <div>
         <p className={sectionBadgeClass}>{hero.badge}</p>
-        <h1 className="font-['Arial_Black','Segoe_UI',sans-serif] text-[clamp(4rem,10vw,8.5rem)] leading-[0.9] font-black uppercase tracking-[-0.07em]">
+        <h1 className="font-['Arial_Black','Segoe_UI',sans-serif] text-[clamp(3.1rem,11vw,8.5rem)] leading-[0.9] font-black uppercase tracking-[-0.06em] sm:text-[clamp(3.6rem,10vw,8.5rem)] sm:tracking-[-0.07em]">
           <span className="text-[color:var(--accent)]">{lead}</span>{' '}
           <span className="text-[color:var(--text-strong)]">{tail}</span>
         </h1>
         <p className="mt-6 max-w-5xl text-[clamp(1.6rem,3.8vw,2.4rem)] leading-[1.15] font-semibold tracking-[-0.04em] text-[color:var(--text-soft)]">
           {hero.title}
         </p>
-        <p className="mt-6 max-w-3xl text-lg leading-8 text-[color:var(--text-soft)]">
+        <p className="mt-6 max-w-3xl text-base leading-7 text-[color:var(--text-soft)] sm:text-lg sm:leading-8">
           {hero.description}
         </p>
-        <p className="mt-4 max-w-3xl text-lg leading-8 text-[color:var(--text-soft)]">
+        <p className="mt-4 max-w-3xl text-base leading-7 text-[color:var(--text-soft)] sm:text-lg sm:leading-8">
           {HERO_STATS.map((item) => item.copy).join(' • ')}
         </p>
 
@@ -52,7 +52,10 @@ export default function HeroSection({ hero, businessName, location }) {
 
         <div className="mt-10 flex flex-wrap gap-4">
           {HERO_STATS.map((item) => (
-            <div className={`${mutedPanelClass} min-w-[180px] px-5 py-4`} key={item.title}>
+            <div
+              className={`${mutedPanelClass} min-w-[150px] px-5 py-4 sm:min-w-[180px]`}
+              key={item.title}
+            >
               <span className="text-[11px] font-bold uppercase tracking-[0.32em] text-[color:var(--accent-soft)]">
                 {item.title}
               </span>
@@ -65,7 +68,7 @@ export default function HeroSection({ hero, businessName, location }) {
       </div>
 
       <div className="grid gap-4">
-        <article className={`${panelClass} p-7`}>
+        <article className={`${panelClass} p-6 sm:p-7`}>
           <span className="text-[11px] font-bold uppercase tracking-[0.3em] text-[color:var(--accent-soft)]">
             Signature Decor Blocks
           </span>
@@ -88,11 +91,11 @@ export default function HeroSection({ hero, businessName, location }) {
 
         <div className="grid gap-4 sm:grid-cols-2">
           {HERO_FLOATING_CARDS.map((item) => (
-            <article className={`${panelClass} p-6`} key={item.eyebrow}>
+            <article className={`${panelClass} p-5 sm:p-6`} key={item.eyebrow}>
               <span className="text-[11px] font-bold uppercase tracking-[0.28em] text-[color:var(--accent-soft)]">
                 {item.eyebrow}
               </span>
-              <strong className="mt-4 block font-['Baskerville','Times_New_Roman',serif] text-[2rem] leading-[1] font-medium text-[color:var(--text-strong)]">
+              <strong className="mt-4 block font-['Baskerville','Times_New_Roman',serif] text-[1.75rem] leading-[1] font-medium text-[color:var(--text-strong)] sm:text-[2rem]">
                 {item.title}
               </strong>
             </article>

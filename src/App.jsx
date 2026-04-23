@@ -22,10 +22,13 @@ import {
   isCloudinaryConfigured,
   uploadEventImageToCloudinary,
 } from './utils/cloudinary.js'
+import { isFirebaseConfigured } from './utils/firebaseClient.js'
+import { recordCloudinaryUpload } from './utils/firebaseUploads.js'
 import {
-  isFirebaseConfigured,
-  recordCloudinaryUpload,
-} from './utils/firebaseUploads.js'
+  fetchSiteDataFromFirebase,
+  isFirebaseSiteDataEnabled,
+  saveSiteDataToFirebase,
+} from './utils/firebaseSiteData.js'
 import {
   fetchSiteDataFromServer,
   isSiteApiConfigured,
@@ -40,6 +43,8 @@ import {
 
 function App() {
   const siteApiEnabled = isSiteApiConfigured()
+  const firebaseSiteDataEnabled = isFirebaseSiteDataEnabled()
+  const remoteSiteDataEnabled = siteApiEnabled || firebaseSiteDataEnabled
   const [siteData, setSiteData] = useState(readStoredSiteData)
   const [adminToken, setAdminToken] = useState(() =>
     siteApiEnabled ? readAdminToken() : '',
@@ -57,7 +62,7 @@ function App() {
   const [eventDraft, setEventDraft] = useState(createEmptyEvent)
   const [uploadingImages, setUploadingImages] = useState(false)
   const [statusNote, setStatusNote] = useState(() =>
-    siteApiEnabled ? 'Loading latest updates...' : 'Changes are saved on this device.',
+    remoteSiteDataEnabled ? 'Loading latest updates...' : 'Changes are saved on this device.',
   )
   const saveRequestId = useRef(0)
 
@@ -80,7 +85,7 @@ function App() {
   }, [])
 
   useEffect(() => {
-    if (!siteApiEnabled) {
+    if (!remoteSiteDataEnabled) {
       return
     }
 
@@ -88,7 +93,9 @@ function App() {
 
     async function loadFromServer() {
       try {
-        const storedValue = await fetchSiteDataFromServer()
+        const storedValue = siteApiEnabled
+          ? await fetchSiteDataFromServer()
+          : await fetchSiteDataFromFirebase()
         if (cancelled) {
           return
         }
@@ -101,7 +108,7 @@ function App() {
         }
         setStatusNote('Loaded latest updates.')
       } catch {
-        setStatusNote('Could not load server data. Using this device data.')
+        setStatusNote('Could not load shared data. Using this device data.')
       }
     }
 
@@ -110,7 +117,7 @@ function App() {
     return () => {
       cancelled = true
     }
-  }, [siteApiEnabled])
+  }, [firebaseSiteDataEnabled, remoteSiteDataEnabled, siteApiEnabled])
 
   function persistSiteData(nextValue, successMessage = 'Changes are saved on this device.') {
     setSiteData(nextValue)
@@ -122,7 +129,7 @@ function App() {
       canUseLocalStorage = false
     }
 
-    if (!siteApiEnabled) {
+    if (!remoteSiteDataEnabled) {
       setStatusNote(
         canUseLocalStorage
           ? successMessage
@@ -131,7 +138,16 @@ function App() {
       return
     }
 
-    if (!adminToken) {
+    if (siteApiEnabled && !adminToken) {
+      setStatusNote(
+        canUseLocalStorage
+          ? 'Changes are saved on this device. Login again to sync for all devices.'
+          : 'Storage is full and you are not logged in. Login again and save to sync.',
+      )
+      return
+    }
+
+    if (!siteApiEnabled && !isAdmin) {
       setStatusNote(
         canUseLocalStorage
           ? 'Changes are saved on this device. Login again to sync for all devices.'
@@ -143,7 +159,11 @@ function App() {
     const requestId = (saveRequestId.current += 1)
     setStatusNote('Saving changes for all devices...')
 
-    saveSiteDataToServer(nextValue, adminToken)
+    const savePromise = siteApiEnabled
+      ? saveSiteDataToServer(nextValue, adminToken)
+      : saveSiteDataToFirebase(nextValue)
+
+    savePromise
       .then(() => {
         if (saveRequestId.current === requestId) {
           setStatusNote('Changes saved for all devices.')
@@ -153,8 +173,8 @@ function App() {
         if (saveRequestId.current === requestId) {
           setStatusNote(
             canUseLocalStorage
-              ? 'Could not save to server. Changes saved only on this device.'
-              : 'Could not save to server and local storage is full.',
+              ? 'Could not save shared data. Changes saved only on this device.'
+              : 'Could not save shared data and local storage is full.',
           )
         }
       })

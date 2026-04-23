@@ -12,7 +12,7 @@ export default function EventModal({ activeEvent, onClose }) {
       onClick={onClose}
     >
       <div
-        className={`${panelClass} max-h-[90vh] w-full max-w-5xl overflow-auto p-6 sm:p-7`}
+        className={`${panelClass} max-h-[90vh] w-full max-w-5xl overflow-auto p-5 sm:p-7`}
         aria-modal="true"
         role="dialog"
         onClick={(event) => event.stopPropagation()}
@@ -20,7 +20,7 @@ export default function EventModal({ activeEvent, onClose }) {
         <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
           <div>
             <p className={sectionBadgeClass}>{activeEvent.category}</p>
-            <h3 className="font-['Baskerville','Times_New_Roman',serif] text-4xl leading-tight font-medium text-[color:var(--text-strong)]">
+            <h3 className="font-['Baskerville','Times_New_Roman',serif] text-3xl leading-tight font-medium text-[color:var(--text-strong)] sm:text-4xl">
               {activeEvent.title}
             </h3>
           </div>

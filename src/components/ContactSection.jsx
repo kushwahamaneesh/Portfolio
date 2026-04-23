@@ -62,23 +62,23 @@ export default function ContactSection({ contact }) {
   }
 
   return (
-    <section className={`${shellClass} py-8 pb-22 md:py-16 md:pb-24`} id="contact">
+    <section className={`${shellClass} py-8 pb-16 sm:pb-20 md:py-16 md:pb-24`} id="contact">
       <div className="mb-10 max-w-4xl">
         <p className="inline-flex items-center gap-3 rounded-full border border-[rgba(255,196,112,0.16)] bg-[rgba(255,179,81,0.08)] px-4 py-2 text-[11px] font-bold uppercase tracking-[0.3em] text-[color:var(--accent-soft)]">
           Contact
         </p>
-        <h2 className="mt-6 font-['Arial_Black','Segoe_UI',sans-serif] text-[clamp(2.6rem,5vw,4.7rem)] leading-[0.95] font-black tracking-[-0.06em] text-[color:var(--text-strong)]">
+        <h2 className="mt-6 font-['Arial_Black','Segoe_UI',sans-serif] text-[clamp(2.2rem,6vw,4.7rem)] leading-[0.95] font-black tracking-[-0.06em] text-[color:var(--text-strong)] sm:text-[clamp(2.6rem,5vw,4.7rem)]">
           Initiate <span className="text-[color:var(--accent)]">Booking</span>
         </h2>
-        <p className="mt-6 text-lg leading-8 text-[color:var(--text-soft)]">
+        <p className="mt-6 text-base leading-7 text-[color:var(--text-soft)] sm:text-lg sm:leading-8">
           Customer details bharo aur booking message seedha WhatsApp par founder ko
           chala jayega.
         </p>
       </div>
 
       <div className="grid gap-8 lg:grid-cols-[1.2fr_0.8fr]">
-        <article className={`${panelClass} p-8`}>
-          <h3 className="font-['Baskerville','Times_New_Roman',serif] text-[2.6rem] leading-[1] font-medium text-[color:var(--text-strong)]">
+        <article className={`${panelClass} p-6 sm:p-8`}>
+          <h3 className="font-['Baskerville','Times_New_Roman',serif] text-[2.1rem] leading-[1] font-medium text-[color:var(--text-strong)] sm:text-[2.6rem]">
             WhatsApp Booking Form
           </h3>
 
@@ -160,11 +160,11 @@ export default function ContactSection({ contact }) {
         </article>
 
         <div className="grid gap-4">
-          <div className={`${panelClass} p-6`}>
+          <div className={`${panelClass} p-5 sm:p-6`}>
             <span className="block text-xs font-bold uppercase tracking-[0.3em] text-[color:var(--text-muted)]">
               Founder
             </span>
-            <strong className="mt-4 block text-2xl text-[color:var(--text-strong)]">
+            <strong className="mt-4 block break-words text-xl text-[color:var(--text-strong)] sm:text-2xl">
               {contact.founderName}
             </strong>
             <p className="mt-3 text-base text-[color:var(--text-soft)]">
@@ -174,7 +174,7 @@ export default function ContactSection({ contact }) {
 
           {contactItems.map((item) => (
             <a
-              className={`${panelClass} block p-6 no-underline`}
+              className={`${panelClass} block p-5 no-underline sm:p-6`}
               href={item.makeHref(contact[item.key])}
               key={item.key}
               rel={item.external ? 'noreferrer' : undefined}
@@ -183,7 +183,7 @@ export default function ContactSection({ contact }) {
               <span className="block text-xs font-bold uppercase tracking-[0.3em] text-[color:var(--text-muted)]">
                 {item.label}
               </span>
-              <strong className="mt-4 block text-2xl text-[color:var(--text-strong)]">
+              <strong className="mt-4 block break-words text-xl text-[color:var(--text-strong)] sm:text-2xl">
                 {item.key === 'instagram' ? '@manishevents2' : contact[item.key]}
               </strong>
             </a>

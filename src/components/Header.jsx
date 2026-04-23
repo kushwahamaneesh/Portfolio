@@ -1,4 +1,4 @@
-import { useState } from 'react'
+﻿import { useState } from 'react'
 import { navLinkClass, pillButtonClass, shellClass } from '../styles/ui.js'
 
 const navItems = [
@@ -71,7 +71,7 @@ export default function Header({ businessName, location, onAdminPanelOpen }) {
               aria-expanded={isMobileMenuOpen}
               onClick={() => setIsMobileMenuOpen((currentValue) => !currentValue)}
             >
-              <span className="text-xl leading-none">{isMobileMenuOpen ? 'X' : '≡'}</span>
+              <span className="text-xl leading-none">{isMobileMenuOpen ? '×' : '≡'}</span>
             </button>
           </div>
 

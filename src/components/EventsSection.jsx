@@ -21,7 +21,7 @@ export default function EventsSection({ events, setActiveEvent }) {
         <p className="inline-flex items-center gap-3 rounded-full border border-[rgba(255,196,112,0.16)] bg-[rgba(255,179,81,0.08)] px-4 py-2 text-[11px] font-bold uppercase tracking-[0.3em] text-[color:var(--accent-soft)]">
           Decoration Showcase
         </p>
-        <h2 className="mt-6 font-['Arial_Black','Segoe_UI',sans-serif] text-[clamp(2.8rem,6vw,5rem)] leading-[0.95] font-black tracking-[-0.06em] text-[color:var(--text-strong)]">
+        <h2 className="mt-6 font-['Arial_Black','Segoe_UI',sans-serif] text-[clamp(2.2rem,7vw,5rem)] leading-[0.95] font-black tracking-[-0.06em] text-[color:var(--text-strong)] sm:text-[clamp(2.8rem,6vw,5rem)]">
           Featured <span className="text-[color:var(--accent)]">Decorations</span>
         </h2>
         <p className="mt-6 text-lg leading-8 text-[color:var(--text-soft)]">
@@ -32,15 +32,15 @@ export default function EventsSection({ events, setActiveEvent }) {
 
       <div className="mt-12 grid gap-8 lg:grid-cols-3">
         {events.map((eventItem) => (
-          <article className={`${panelClass} overflow-hidden p-6`} key={eventItem.id}>
-            <div className="rounded-[28px] border border-[rgba(255,255,255,0.08)] bg-[rgba(255,255,255,0.02)] p-4">
+          <article className={`${panelClass} overflow-hidden p-5 sm:p-6`} key={eventItem.id}>
+            <div className="rounded-[28px] border border-[rgba(255,255,255,0.08)] bg-[rgba(255,255,255,0.02)] p-3 sm:p-4">
               <div className="mb-4 flex items-center justify-between">
                 <span className="rounded-full bg-[rgba(255,179,81,0.14)] px-4 py-2 text-xs font-bold uppercase tracking-[0.24em] text-[color:var(--accent)]">
                   {eventItem.category}
                 </span>
               </div>
 
-              <div className="relative h-64 overflow-hidden rounded-[24px] border border-[rgba(255,255,255,0.08)] bg-[rgba(255,255,255,0.02)]">
+              <div className="relative h-52 overflow-hidden rounded-[24px] border border-[rgba(255,255,255,0.08)] bg-[rgba(255,255,255,0.02)] sm:h-64">
                 {eventItem.videoUrl ? (
                   <video
                     className="h-full w-full bg-[#0b111c] object-contain"
@@ -67,7 +67,7 @@ export default function EventsSection({ events, setActiveEvent }) {
             </div>
 
             <div className="p-5">
-              <h3 className="font-['Baskerville','Times_New_Roman',serif] text-[2.2rem] leading-[1] font-medium text-[color:var(--text-strong)]">
+              <h3 className="font-['Baskerville','Times_New_Roman',serif] text-[1.9rem] leading-[1] font-medium text-[color:var(--text-strong)] sm:text-[2.2rem]">
                 {eventItem.title}
               </h3>
               <p className="mt-3 text-sm leading-6 text-[color:var(--text-soft)]">

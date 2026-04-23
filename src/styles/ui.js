@@ -1,5 +1,5 @@
 export const shellClass =
-  'mx-auto w-[min(1280px,calc(100%-28px))]'
+  'mx-auto w-[min(1280px,calc(100%_-_28px))]'
 
 export const sectionBadgeClass =
   "mb-5 inline-flex items-center gap-3 rounded-full border border-[rgba(255,196,112,0.16)] bg-[rgba(255,179,81,0.08)] px-4 py-2 text-[11px] font-bold uppercase tracking-[0.3em] text-[color:var(--accent-soft)] before:h-px before:w-7 before:bg-current before:content-['']"

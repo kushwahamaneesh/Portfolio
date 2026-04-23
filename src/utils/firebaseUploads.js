@@ -1,56 +1,17 @@
-import { getApps, initializeApp } from 'firebase/app'
 import { getDatabase, push, ref, set } from 'firebase/database'
 import { addDoc, collection, getFirestore, serverTimestamp } from 'firebase/firestore'
-
-function getFirebaseConfig() {
-  const apiKey = (import.meta.env.VITE_FIREBASE_API_KEY ?? '').trim()
-  const authDomain = (import.meta.env.VITE_FIREBASE_AUTH_DOMAIN ?? '').trim()
-  const projectId = (import.meta.env.VITE_FIREBASE_PROJECT_ID ?? '').trim()
-  const storageBucket = (import.meta.env.VITE_FIREBASE_STORAGE_BUCKET ?? '').trim()
-  const messagingSenderId = (import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID ?? '').trim()
-  const appId = (import.meta.env.VITE_FIREBASE_APP_ID ?? '').trim()
-  const databaseURL = (import.meta.env.VITE_FIREBASE_DATABASE_URL ?? '').trim()
-
-  return {
-    apiKey,
-    authDomain,
-    projectId,
-    storageBucket,
-    messagingSenderId,
-    appId,
-    databaseURL,
-  }
-}
-
-export function isFirebaseConfigured() {
-  const { apiKey, authDomain, projectId, appId } = getFirebaseConfig()
-  return Boolean(apiKey && authDomain && projectId && appId)
-}
-
-function getFirebaseApp() {
-  const existing = getApps()
-  if (existing.length > 0) {
-    return existing[0]
-  }
-
-  const config = getFirebaseConfig()
-  return initializeApp({
-    apiKey: config.apiKey,
-    authDomain: config.authDomain,
-    projectId: config.projectId,
-    storageBucket: config.storageBucket || undefined,
-    messagingSenderId: config.messagingSenderId || undefined,
-    appId: config.appId,
-    databaseURL: config.databaseURL || undefined,
-  })
-}
+import {
+  getFirebaseApp,
+  getFirebaseDatabaseUrl,
+  isFirebaseConfigured,
+} from './firebaseClient.js'
 
 export async function recordCloudinaryUpload({ url, file, eventDraft }) {
   if (!isFirebaseConfigured()) {
     return null
   }
 
-  const config = getFirebaseConfig()
+  const databaseURL = getFirebaseDatabaseUrl()
   const payload = {
     url,
     source: 'cloudinary',
@@ -63,7 +24,7 @@ export async function recordCloudinaryUpload({ url, file, eventDraft }) {
 
   const app = getFirebaseApp()
 
-  if (config.databaseURL) {
+  if (databaseURL) {
     const database = getDatabase(app)
     const recordRef = push(ref(database, 'cloudinaryUploads'))
     await set(recordRef, {
@@ -80,4 +41,3 @@ export async function recordCloudinaryUpload({ url, file, eventDraft }) {
   })
   return { id: docRef.id, driver: 'firestore' }
 }
-

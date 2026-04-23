@@ -15,20 +15,20 @@ export default function Footer({
           <p className="text-xs font-bold uppercase tracking-[0.28em] text-[color:var(--accent-soft)]">
             Decoration Philosophy
           </p>
-          <h3 className="mt-5 max-w-[12ch] font-['Baskerville','Times_New_Roman',serif] text-5xl leading-[0.95] font-medium text-[color:var(--text-strong)]">
+          <h3 className="mt-5 max-w-[12ch] font-['Baskerville','Times_New_Roman',serif] text-4xl leading-[0.95] font-medium text-[color:var(--text-strong)] sm:text-5xl">
             Building the next event setup with clean premium styling.
           </h3>
-          <p className="mt-5 max-w-xl text-lg leading-8">
+          <p className="mt-5 max-w-xl text-base leading-7 sm:text-lg sm:leading-8">
             Focused on stage balance, guest entry, backdrop quality, and
             memorable photo corners for real celebrations.
           </p>
         </div>
 
         <div>
-          <h4 className="text-3xl font-extrabold text-[color:var(--text-strong)]">
+          <h4 className="text-2xl font-extrabold text-[color:var(--text-strong)] sm:text-3xl">
             Navigation
           </h4>
-          <div className="mt-6 grid gap-3 text-2xl font-semibold">
+          <div className="mt-6 grid gap-3 text-xl font-semibold sm:text-2xl">
             <a href="#home">Home</a>
             <a href="#about">About</a>
             <a href="#events">Showcase</a>
@@ -36,8 +36,8 @@ export default function Footer({
           </div>
         </div>
 
-        <div className="rounded-[30px] border border-white/8 bg-[rgba(255,255,255,0.02)] p-8">
-          <p className="text-4xl font-extrabold text-[color:var(--text-strong)]">
+        <div className="rounded-[30px] border border-white/8 bg-[rgba(255,255,255,0.02)] p-6 sm:p-8">
+          <p className="text-3xl font-extrabold text-[color:var(--text-strong)] sm:text-4xl">
             Party Events
           </p>
           <div className="mt-8 grid gap-6 sm:grid-cols-2">
@@ -60,7 +60,7 @@ export default function Footer({
           </div>
           <div className="mt-8 border-t border-white/8 pt-6 text-[color:var(--accent)]">
             <a
-              className="text-2xl font-bold no-underline"
+              className="break-all text-base font-bold no-underline sm:text-2xl"
               href={`mailto:${contact.email}`}
             >
               {contact.email}
