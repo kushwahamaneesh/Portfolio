@@ -28,6 +28,7 @@ import {
   fetchSiteDataFromFirebase,
   isFirebaseSiteDataEnabled,
   saveSiteDataToFirebase,
+  subscribeSiteDataFromFirebase,
 } from './utils/firebaseSiteData.js'
 import {
   fetchSiteDataFromServer,
@@ -118,6 +119,47 @@ function App() {
       cancelled = true
     }
   }, [firebaseSiteDataEnabled, remoteSiteDataEnabled, siteApiEnabled])
+
+  useEffect(() => {
+    if (!firebaseSiteDataEnabled) {
+      return
+    }
+
+    let hasAnnounced = false
+
+    let unsubscribe = null
+    try {
+      unsubscribe = subscribeSiteDataFromFirebase(
+        (value) => {
+          const normalized = normalizeSiteData(value)
+          setSiteData(normalized)
+          try {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(normalized))
+          } catch {
+            // Ignore local storage issues when Firebase is available.
+          }
+          if (!hasAnnounced) {
+            hasAnnounced = true
+            setStatusNote('Live updates enabled.')
+          }
+        },
+        () => {
+          setStatusNote('Live updates error. Using this device data.')
+        },
+      )
+    } catch {
+      // If Firebase is misconfigured, do not crash the app.
+      Promise.resolve().then(() => {
+        setStatusNote('Firebase sync is not configured correctly.')
+      })
+    }
+
+    return () => {
+      if (typeof unsubscribe === 'function') {
+        unsubscribe()
+      }
+    }
+  }, [firebaseSiteDataEnabled])
 
   function persistSiteData(nextValue, successMessage = 'Changes are saved on this device.') {
     setSiteData(nextValue)

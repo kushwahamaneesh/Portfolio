@@ -1,5 +1,17 @@
-import { get, ref as databaseRef, set as databaseSet } from 'firebase/database'
-import { doc, getDoc, getFirestore, setDoc, serverTimestamp } from 'firebase/firestore'
+import {
+  get,
+  onValue,
+  ref as databaseRef,
+  set as databaseSet,
+} from 'firebase/database'
+import {
+  doc,
+  getDoc,
+  getFirestore,
+  onSnapshot,
+  setDoc,
+  serverTimestamp,
+} from 'firebase/firestore'
 import { getDatabase } from 'firebase/database'
 import {
   getFirebaseApp,
@@ -17,6 +29,19 @@ function isTruthy(value) {
 function getSiteDataPath() {
   const raw = (import.meta.env.VITE_FIREBASE_SITE_DATA_PATH ?? 'siteData/v1').trim()
   return raw.replace(/^\/+/, '')
+}
+
+function resolveFirestoreDocRef(firestore, path) {
+  const segments = String(path)
+    .split('/')
+    .map((item) => item.trim())
+    .filter(Boolean)
+
+  if (segments.length >= 2 && segments.length % 2 === 0) {
+    return doc(firestore, ...segments)
+  }
+
+  return doc(firestore, 'siteData', 'v1')
 }
 
 export function isFirebaseSiteDataEnabled() {
@@ -39,7 +64,7 @@ export async function fetchSiteDataFromFirebase() {
   }
 
   const firestore = getFirestore(app)
-  const docRef = doc(firestore, 'siteData', 'v1')
+  const docRef = resolveFirestoreDocRef(firestore, path)
   const snapshot = await getDoc(docRef)
   return snapshot.exists() ? snapshot.data() : {}
 }
@@ -63,7 +88,7 @@ export async function saveSiteDataToFirebase(siteData) {
   }
 
   const firestore = getFirestore(app)
-  const docRef = doc(firestore, 'siteData', 'v1')
+  const docRef = resolveFirestoreDocRef(firestore, path)
   await setDoc(
     docRef,
     {
@@ -72,6 +97,47 @@ export async function saveSiteDataToFirebase(siteData) {
     },
     { merge: false },
   )
-  return { driver: 'firestore', doc: 'siteData/v1' }
+  return { driver: 'firestore', doc: path }
 }
 
+export function subscribeSiteDataFromFirebase(onData, onError) {
+  if (!isFirebaseSiteDataEnabled()) {
+    throw new Error('Firebase site data is not enabled')
+  }
+
+  const app = getFirebaseApp()
+  const databaseURL = getFirebaseDatabaseUrl()
+  const path = getSiteDataPath()
+
+  if (databaseURL) {
+    const database = getDatabase(app)
+    const valueRef = databaseRef(database, path)
+    const unsubscribe = onValue(
+      valueRef,
+      (snapshot) => {
+        onData(snapshot.exists() ? snapshot.val() : {})
+      },
+      (error) => {
+        if (typeof onError === 'function') {
+          onError(error)
+        }
+      },
+    )
+    return unsubscribe
+  }
+
+  const firestore = getFirestore(app)
+  const docRef = resolveFirestoreDocRef(firestore, path)
+  const unsubscribe = onSnapshot(
+    docRef,
+    (snapshot) => {
+      onData(snapshot.exists() ? snapshot.data() : {})
+    },
+    (error) => {
+      if (typeof onError === 'function') {
+        onError(error)
+      }
+    },
+  )
+  return unsubscribe
+}
